@@ -27,7 +27,7 @@ options:
   --insecure   Ignore HTTPS insecure request warnings.
 ```
 
-By default, the script will print a table containing advisories issued in the past 14 days, and can be overriden using `--days`. If you cannot directly reach [https://esupport.ibm.com/customercare/flrt/doc?page=aparJSON](https://esupport.ibm.com/customercare/flrt/doc?page=aparJSON), you can pass the JSON data file as an input to the script with `--file`.
+By default, the script will print a table containing advisories issued in the past 14 days (date format `%d/%m/%Y`), and can be overriden using `--days`. If you cannot directly reach [https://esupport.ibm.com/customercare/flrt/doc?page=aparJSON](https://esupport.ibm.com/customercare/flrt/doc?page=aparJSON), you can pass the JSON data file as an input to the script with `--file`.
 
 CVE's with a CVSS score >= 8, will be highlighted in red.
 
