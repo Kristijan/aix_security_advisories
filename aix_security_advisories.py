@@ -32,7 +32,7 @@ parser.add_argument('--insecure',
                     default=True,
                     help='''Ignore HTTPS insecure request warnings.''')
 
-# Parse command line args and read file
+# Parse command line args
 results = parser.parse_args()
 
 # Get JSON data, either from file or URL
@@ -96,7 +96,7 @@ for advisory in data:
 advisories_sorted = sorted(advisories, key=lambda d: d['issued'])
 
 # Table headers
-table = Table(title='AIX/VIOS Security Advisories' ,show_lines=True)
+table = Table(title='AIX/VIOS Security Advisories', show_lines=True)
 table.add_column("Issued")
 table.add_column("Updated")
 table.add_column("Abstract")
