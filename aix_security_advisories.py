@@ -19,18 +19,22 @@ base_path = Path(__file__).parent
 
 # Setup argument parser
 parser = argparse.ArgumentParser(description="Produces a table of AIX/VIOS advisories")
-parser.add_argument('--days',
+parser.add_argument('-d', '--days',
                     action='store',
                     default=14,
                     type=int,
                     help='''Show advisories issued and/or updated in the past number days.''')
-parser.add_argument('--file',
+parser.add_argument('-f', '--file',
                     type=Path,
                     help='''File containing JSON data.''')
-parser.add_argument('--insecure',
+parser.add_argument('-i', '--insecure',
                     action='store_false',
                     default=True,
                     help='''Ignore HTTPS insecure request warnings.''')
+parser.add_argument('-u', '--urls',
+                    action='store_true',
+                    default=False,
+                    help='''Show only URLs to download fixes.''')
 
 # Parse command line args
 results = parser.parse_args()
@@ -90,6 +94,7 @@ for advisory in data:
             advisories.append({"issued": date_issued,
                             "updated": date_updated_formatted,
                             "apAbstract": advisory['apAbstract'],
+                            "downloadUrl": advisory['downloadUrl'],
                             "bulletinUrl": advisory['bulletinUrl'],
                             "reboot": advisory['reboot'],
                             "cvss": advisory['cvss']})
@@ -97,13 +102,16 @@ advisories_sorted = sorted(advisories, key=lambda d: d['issued'])
 
 # Table headers
 table = Table(title='AIX/VIOS Security Advisories', show_lines=True)
-table.add_column("Issued")
-table.add_column("Updated")
-table.add_column("Abstract")
-table.add_column("URL")
-table.add_column("Reboot")
-table.add_column("CVE")
-table.add_column("CVSS")
+if not results.urls:
+    table.add_column("Issued")
+    table.add_column("Updated")
+    table.add_column("Abstract")
+    table.add_column("URL")
+    table.add_column("Reboot")
+    table.add_column("CVE")
+    table.add_column("CVSS")
+else:
+    table.add_column("URL")
 
 # Table contents
 for advisory in advisories_sorted:
@@ -127,12 +135,15 @@ for advisory in advisories_sorted:
     else:
         table_cve.add_row('N/A')
         table_cvss.add_row('N/A')
-    table.add_row(advisory['issued'].strftime("%d/%m/%Y"),
-                  advisory['updated'], advisory['apAbstract'],
-                  advisory['bulletinUrl'],
-                  advisory['reboot'],
-                  table_cve,
-                  table_cvss)
+    if results.urls:
+        table.add_row(advisory['downloadUrl'])
+    else:
+        table.add_row(advisory['issued'].strftime("%d/%m/%Y"),
+                      advisory['updated'], advisory['apAbstract'],
+                      advisory['bulletinUrl'],
+                      advisory['reboot'],
+                      table_cve,
+                      table_cvss)
 
 # Print table
 console = Console()
